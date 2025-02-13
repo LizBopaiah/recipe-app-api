@@ -1,10 +1,9 @@
----
 name: Checks
 on: [push]
 jobs:
   test-lint:
     name: Test and Lint
-    runs-on: ${{ fromJSON('["ubuntu-latest", "self-hosted"]')[github.repository == 'github/docs-internal'] }} //operating system on which the job is done. ita a basic linux operating system
+    runs-on: ubuntu-latest # Specify the operating system on which the job will run
     steps:
       - name: Login to Docker Hub
         uses: docker/login-action@v1
@@ -13,8 +12,23 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Test
-        run: docker-compose run --rm app sh -c "python manage.py test" //comand that runs the unit test
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          tags: user/app:latest
+      - name: Run Tests
+        run: docker-compose run --rm app sh -c "python manage.py test" # Command that runs the unit tests
       - name: Lint
-        run:  docker-compose run --rm app sh -c "flake8"
-
+        run: docker-compose run --rm app sh -c "flake8" # Command that runs the linting
