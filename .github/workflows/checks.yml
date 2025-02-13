@@ -3,8 +3,16 @@ on: [push]
 jobs:
   test-lint:
     name: Test and Lint
-    runs-on: ubuntu-latest # Specify the operating system on which the job will run
+    runs-on: ubuntu-latest
     steps:
+      - name: Install Docker
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker.io
+      - name: Install Docker Compose
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
       - name: Login to Docker Hub
         uses: docker/login-action@v1
         with:
@@ -29,6 +37,6 @@ jobs:
           push: false
           tags: user/app:latest
       - name: Run Tests
-        run: docker-compose run --rm app sh -c "python manage.py test" # Command that runs the unit tests
+        run: docker-compose run --rm app sh -c "python manage.py test"
       - name: Lint
-        run: docker-compose run --rm app sh -c "flake8" # Command that runs the linting
+        run: docker-compose run --rm app sh -c "flake8"
