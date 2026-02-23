@@ -1,0 +1,23 @@
+#.dockerignore- list of files that will be excluded from the docker context
+#when u run a docker image it uses docker context which is a directory that you run it from. All files are passed to the docker context except the files you listed in dockerignore
+#these are files that docker doesn't need to be concerned with
+#-------------------------------------------------------
+
+# Git
+.git
+.gitignore
+
+# Docker
+.docker  
+#.docker-hidden file that might be created in our dockerfile
+
+# Python
+#When you run python it creates a chache and stores it within pycache. It may be created for our local system not for alpine so to avoide creating any problems we avoid adding it to the docker
+
+app/__pycache__/
+app/*/__pycache__/
+app/*/*/__pycache__/
+app/*/*/*/__pycache__/
+.env/
+.venv/
+venv/

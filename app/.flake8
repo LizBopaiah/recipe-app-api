@@ -1,0 +1,10 @@
+# Add the configuration needed for our linting tool. 
+# We need to adda a configuration for flake8 to tell it what directories and files to exclude from the linting.
+# We do this because there are lot of linting errors in the default django settings files. So we just exclude them becoz we didn't create those files, they were created from the template and we only want to add the linting to the code that we created in the project.
+
+[flake8]
+exclude=
+    migrations,
+    __pycache__,
+    manage.py,
+    settings.py

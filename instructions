@@ -1,0 +1,7 @@
+to run and install flake8: docker-compose run --rm app sh -c "flake8"
+no errors means that it is installed correctly and 
+
+django CLI command to create a new project: docker-compose run --rm app sh -c "django-admin startproject app ."
+
+docker compose comand to start our services: docker-compose up
+when you open http://127.0.0.1:8000/ you should see the django launch page.

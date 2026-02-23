@@ -1,0 +1,17 @@
+#version of the docker compose syntax that we are going to use
+version: "3.9"
+
+#specify the services.
+#Docker compose files typically consist of one or more services thats needed for your application
+services:
+  app: #this is the name of the service
+    build:
+      context: . #says that we want build our dockerfile inside our current directory
+      args: #In order to prevent the linting tools fromrunning on the application that we are deployed to the server we separate the development dependencies(since it is only needed for development)  
+        - DEV=true
+    ports:
+      - "8000:8000"  #maps port 8000 on our local machine to port 8000 inside our docker container. This is how we can acces the network when we want to connect to our server
+    volumes:    #volumes are a way of mapping directories from our system into the docker container.
+      - ./app:/app  #here we are mapping the app directory that we created in the project to /app inside the container. This is added becoz we want the updates taht we make to our code in our local project to be reflected in the running container in real time.This way you don't have tou rebild the container everytime we make changes to the code insead automatically sync the code in our project to the code running in the container
+    command: >  #it is the command that is used to run the service. we can overwrite this command when we run docker compose
+      sh -c "python manage.py runserver 0.0.0.0:8000"

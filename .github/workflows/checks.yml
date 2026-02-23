@@ -1,0 +1,33 @@
+#it will perform various differnt checks on our code
+#an ACTION can be created or you can use pre-existing actions as well. An action is just a Docker container and a Docker configuration tats set up to perform a certain task.
+#docker-compose comes preinstalled in the ubuntu-20.04 runner
+#3 dash means it is a yml file
+---
+name: Checks
+
+on: [push]  #trigger- any time we comment and push anything to github it is going to run these jobs specified inside this yml file
+
+jobs:
+  test-lint:              #defines a new job called test-lint. this line is the id of the job.
+    name: Test and Lint   #name is the human friendly name that we are going to see within the github actions interface
+    runs-on: ubuntu-20.04 #runs-on is the runner that we are goin to run our job on
+    steps:                #steps are the different things that run for the job
+      # step 1
+      - name: Login to Docker Hub     #this action is used to log into docker
+        uses: docker/login-action@v1  #allows you to use another pre-made action thats provided in the github actions repository.
+        with:                         #thsi sthe credentials that its going to log into the docker with
+          username: ${{ secrets.DOCKERHUB_USER }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      # step 2
+      #checkout is an action that is provided by github automatically or provided by github premade for free. 
+      #it checks our code inside our github actions job.
+      #reason to do this: by default teh code is not hecked out inside the job that we r running.
+      #since we do testing and linting we need to use this checkout step to make sure that the code is available for us to run the next step.
+      - name: Checkout  
+        uses: actions/checkout@v2
+      # step 3
+      - name: Test
+        run: docker-compose run --rm app sh -c "python manage.py test"   #we are going to run the command used to run the unit tests on our project
+      # step 4
+      - name: Lint
+        run: docker-compose run --rm app sh -c "flake8"
